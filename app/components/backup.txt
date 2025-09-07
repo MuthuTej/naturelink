@@ -1,0 +1,109 @@
+
+const EVENTS = [
+  {
+    id: "1",
+    title: "Tree Plantation Drive",
+    date: "2025-09-10",
+    location: "Guindy National Park",
+    category: "Plantation",
+    image:
+      "https://ecobravo.co.uk/cdn/shop/articles/10_Surprising_Eco-Friendly_Activities_2100x.jpg?v=1596013082",
+    progress: 0.7,
+    spots: { registered: 70, total: 100 },
+    tags: ["Saplings", "Volunteers", "Morning"], lat: 13.0108, lng: 80.212,
+  },
+  {
+    id: "2",
+    title: "Beach Cleanup",
+    date: "2025-09-15",
+    location: "Marina Beach",
+    category: "Cleanup",
+    image:
+      "https://runwildmychild.com/wp-content/uploads/2023/04/LeaReynoldsPhotography2023-3.jpg",
+    progress: 0.4,
+    spots: { registered: 40, total: 100 },
+    tags: ["Plastics", "Recycling", "Coast"], lat: 13.049952, lng: 80.28244,
+  },
+  {
+    id: "3",
+    title: "Eco Awareness Marathon",
+    date: "2025-09-20",
+    location: "CIT Campus",
+    category: "Awareness",
+    image:
+      "https://runwildmychild.com/wp-content/uploads/2023/04/earth-day1-1.jpg",
+    progress: 0.55,
+    spots: { registered: 55, total: 100 },
+    tags: ["Run", "Community", "Health"], lat: 12.9568, lng: 80.0837
+  },
+  {
+    id: "4",
+    title: "Urban Garden Workshop",
+    date: "2025-10-02",
+    location: "Adyar Eco Park",
+    category: "Workshop",
+    image:
+      "https://runwildmychild.com/wp-content/uploads/2023/04/LeaReynoldsPhotography2023-4.jpg",
+    progress: 0.25,
+    spots: { registered: 25, total: 100 },
+    tags: ["DIY", "Compost", "Home"], lat: 13.0067, lng: 80.257,
+  },
+];
+
+const CATEGORIES = ["All", "Plantation", "Cleanup", "Awareness", "Workshop"];
+
+
+const EVENTS = {
+    "1": {
+        title: "Tree Plantation Drive",
+        date: "2025-09-10",
+        location: "Guindy National Park",
+        category: "Plantation",
+        image:
+            "https://ecobravo.co.uk/cdn/shop/articles/10_Surprising_Eco-Friendly_Activities_2100x.jpg?v=1596013082",
+        progress: 0.7,
+        spots: { registered: 70, total: 100 },
+        tags: ["Saplings", "Volunteers", "Morning"],
+        description:
+            "Join us in restoring green cover 🌳! Plant saplings, nurture the soil, and create a healthier environment together.",
+    },
+    "2": {
+        title: "Beach Cleanup",
+        date: "2025-09-15",
+        location: "Marina Beach",
+        category: "Cleanup",
+        image:
+            "https://runwildmychild.com/wp-content/uploads/2023/04/LeaReynoldsPhotography2023-3.jpg",
+        progress: 0.4,
+        spots: { registered: 40, total: 100 },
+        tags: ["Plastics", "Recycling", "Coast"],
+        description:
+            "Help us keep the shorelines clean 🏖️. Collect plastics, sort recyclables, and protect marine life.",
+    },
+    "3": {
+        title: "Eco Awareness Marathon",
+        date: "2025-09-20",
+        location: "CIT Campus",
+        category: "Awareness",
+        image:
+            "https://runwildmychild.com/wp-content/uploads/2023/04/earth-day1-1.jpg",
+        progress: 0.55,
+        spots: { registered: 55, total: 100 },
+        tags: ["Run", "Community", "Health"],
+        description:
+            "Run for nature 🏃‍♂️! Spread awareness on sustainability while boosting your health.",
+    },
+    "4": {
+        title: "Urban Garden Workshop",
+        date: "2025-10-02",
+        location: "Adyar Eco Park",
+        category: "Workshop",
+        image:
+            "https://runwildmychild.com/wp-content/uploads/2023/04/LeaReynoldsPhotography2023-4.jpg",
+        progress: 0.25,
+        spots: { registered: 25, total: 100 },
+        tags: ["DIY", "Compost", "Home"],
+        description:
+            "Discover how to create your own urban garden 🌱. Composting, planting, and sustainable living techniques.",
+    },
+};

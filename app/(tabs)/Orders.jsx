@@ -6,16 +6,19 @@ import { useRouter } from "expo-router";
 
 export default function MapScreen() {
   const [location, setLocation] = useState(null);
+  const [events, setEvents] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
     (async () => {
+      // Request location permission
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission denied for location");
         return;
       }
+
       try {
         let { coords } = await Location.getCurrentPositionAsync({});
         setLocation(coords);
@@ -25,13 +28,24 @@ export default function MapScreen() {
     })();
   }, []);
 
-  // Pins
-  const locations = [
-    { id: "2", lat: 13.0108, lng: 80.212, title: "Guindy" },
-    { id: "1", lat: 13.049952, lng: 80.28244, title: "Marina Beach" },
-    { id: "4", lat: 12.9568, lng: 80.0837, title: "Kundrathur" },
-    { id: "3", lat: 13.0067, lng: 80.257, title: "Adyar" },
-  ];
+  // Fetch events from backend
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch(
+          "https://naturelink-production.up.railway.app/api/events"
+        );
+        const json = await response.json();
+        if (json.success && json.data?.events) {
+          setEvents(json.data.events);
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   if (errorMsg) {
     return (
@@ -50,27 +64,27 @@ export default function MapScreen() {
     );
   }
 
-  // Markers + Paths
-  const markersAndPaths = locations
+  // Generate Markers + Paths for each event
+  const markersAndPaths = events
     .map(
-      (loc) => `
-      var marker = L.marker([${loc.lat}, ${loc.lng}]).addTo(map)
-        .bindPopup("<b>${loc.title}</b>");
-marker.on('click', function() {
-  window.ReactNativeWebView.postMessage(JSON.stringify({ 
-    id: "${loc.id}", 
-    title: "${loc.title}",
-    lat: ${loc.lat},
-    lng: ${loc.lng}
-  }));
-});
+      (event) => `
+      var marker = L.marker([${event.coordinates.latitude}, ${event.coordinates.longitude}]).addTo(map)
+        .bindPopup("<b>${event.title}</b><br>${event.location}");
+      
+      marker.on('click', function() {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ 
+          id: "${event._id}", 
+          title: "${event.title}",
+          lat: ${event.coordinates.latitude},
+          lng: ${event.coordinates.longitude}
+        }));
+      });
 
-      L.polyline([[${location.latitude}, ${location.longitude}], [${loc.lat}, ${loc.lng}]], 
+      L.polyline([[${location.latitude}, ${location.longitude}], [${event.coordinates.latitude}, ${event.coordinates.longitude}]], 
         { color: '#6C63FF', weight: 3, opacity: 0.7 }).addTo(map);
     `
     )
     .join("\n");
-
 
   // Leaflet HTML
   const html = `
@@ -134,9 +148,7 @@ marker.on('click', function() {
             },
           });
         }}
-        
       />
-
     </View>
   );
 }

@@ -1,11 +1,74 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function NatureScreen() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");   
+  const [password, setPassword] = useState(""); 
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
+
+  // ✅ Check token on mount
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (token) {
+          router.replace("(tabs)/Menu"); // redirect if token exists
+        }
+      } catch (error) {
+        console.log("Token check error:", error);
+      }
+    };
+    checkToken();
+  }, []);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Please enter email and password");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch("https://naturelink-production.up.railway.app/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.ok && data.success) {
+        // ✅ Save token
+        await AsyncStorage.setItem("authToken", data.data.token);
+
+        Alert.alert("Success", data.message);
+
+        // Redirect user
+        router.replace("(tabs)/Menu");
+      } else {
+        Alert.alert("Login Failed", data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log("Login error:", error);
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-green-500">
@@ -23,23 +86,29 @@ export default function NatureScreen() {
         {/* Welcome */}
         <View className="mb-8 items-center">
           <Ionicons name="sunny-outline" size={64} color="#22c55e" />
-          <Text className="text-3xl font-bold text-green-800 mt-4">Welcome to NatureLink</Text>
+          <Text className="text-3xl font-bold text-green-800 mt-4">
+            Welcome to NatureLink
+          </Text>
           <Text className="text-green-700 text-sm mt-2 text-center leading-relaxed">
             Breathe in freshness, feel the green, and stay connected with nature.
           </Text>
         </View>
 
-        {/* Example Input */}
+        {/* Email Input */}
         <View className="mb-6">
-          <Text className="text-green-900 font-medium mb-2">UserName</Text>
+          <Text className="text-green-900 font-medium mb-2">Email</Text>
           <TextInput
             className="bg-green-200 rounded-lg px-4 py-4 text-green-900"
-            placeholder="Enter your username"
+            placeholder="Enter your email"
             placeholderTextColor="#4d7c0f"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
         </View>
 
-        {/* Example Password with Eye */}
+        {/* Password Input */}
         <View className="mb-4">
           <Text className="text-green-900 font-medium mb-2">Password</Text>
           <View className="bg-green-200 rounded-lg px-4 py-4 flex flex-row items-center justify-between">
@@ -48,6 +117,8 @@ export default function NatureScreen() {
               placeholder="••••••••••••"
               placeholderTextColor="#4d7c0f"
               secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
@@ -59,17 +130,25 @@ export default function NatureScreen() {
           </View>
           <View className="mt-6 flex-row justify-center">
             <Text className="text-gray-600 text-sm">Don’t have an account? </Text>
-            <TouchableOpacity onPress={() => router.push('/sign-up')}>
+            <TouchableOpacity onPress={() => router.push("/sign-up")}>
               <Text className="text-green-700 text-sm font-semibold">Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Nature Button */}
-        <TouchableOpacity onPress={() => router.push('(tabs)/Menu')} className="w-full bg-green-600 py-4 rounded-full shadow-lg" >
-          <Text className="text-white font-bold text-lg text-center">
-            Explore Nature
-          </Text>
+        {/* Login Button */}
+        <TouchableOpacity
+          onPress={handleLogin}
+          className="w-full bg-green-600 py-4 rounded-full shadow-lg"
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-white font-bold text-lg text-center">
+              Explore Nature
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* Extra Decorations */}
